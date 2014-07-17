@@ -1,0 +1,13 @@
+{
+  "name": "TCC_API",
+  "description": "TCC 2014: APIs: Agile, Powerful, Intuitive",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "4.x",
+    "express-session": "1.x",
+    "body-parser":"1.x",
+    "cookie-parser":"1.x",
+    "connect-flash":"0.x",
+    "ejs": "1.x"
+  }
+}

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>TCC 2014 APIs: Agile Powerful Intuitive</title>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/tcc_api.css">
+</head>
+<body>
+	<div class="container">
+		<div class="login-container">
+			<img src="/images/tableau.png">
+			<% if(typeof error == 'object' && error) {%>
+				<p class="bg-danger"><%= error %></p>
+			<% } %>
+			<% if(typeof success == 'object' && success) {%>
+				<p class="bg-success"><%= success %></p>
+			<% } %>
+            <div class="form-box">
+                <form action="login" method="post">
+                    <input name="user" type="text" placeholder="username">
+                    <input name="password" type="password" placeholder="password">
+                    <button class="btn btn-info btn-block login" type="submit">Login</button>
+                    <a class="btn btn-info btn-block login" href="/signup">Register</a>
+                </form>
+            </div>
+        </div>
+</body>
+</html>

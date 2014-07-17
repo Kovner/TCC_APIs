@@ -1,0 +1,55 @@
+body{
+    background: #313032;
+}
+
+html,body{
+    position: relative;
+    height: 100%;
+}
+
+h1,h2,h3,h4,h5,p {
+  color: #555;
+}
+
+.login-container{
+    position: relative;
+    width: 300px;
+    margin: 80px auto;
+    padding: 20px 40px 40px;
+    text-align: center;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-box input{
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    height:40px;
+    border: 1px solid #ccc;;
+    background: #fff;
+}
+
+.form-box a:hover{
+  text-decoration: none
+}
+
+.form-box input:focus{
+    outline: 0;
+    background: #f6f6f6;
+}
+
+.form-box input[type="text"]{
+    border-radius: 5px 5px 0 0;
+}
+
+.form-box input[type="password"]{
+    border-radius: 0 0 5px 5px;
+    border-top: 0;
+}
+
+.form-box button.login{
+    margin-top:15px;
+    padding: 10px 20px;
+}
