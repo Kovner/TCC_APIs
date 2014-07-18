@@ -5,9 +5,18 @@
 	<link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/tcc_api.css">
 </head>
-<body>
-    <h1>
-    	About our Company...
-    </h1>
+<body class='body-main'>
+	<nav class="navbar navbar-inverse" role="navigation">
+		<a class='navbar-brand'><img src="/images/tableau_small.png"></a>
+		<h1 class='navbar-text'>TCC</h3>
+		<ul class="nav navbar-nav">
+			<li class='active'><a href='#'>About</a></li>
+			<li><a href='/analyze'>Analyze your Own Data</a></li>		
+		</ul>
+		<p class="navbar-text navbar-right">Signed in as <%=user%></p>
+	</nav>
+	<div class="main">
+		<h1>Here will be a viz that uses the javascript api. Maybe a storyboard with custom navigation.</h1>
+	</div>
 </body>
 </html>
