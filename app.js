@@ -12,11 +12,17 @@ var jsxml = require("node-jsxml");
 var XMLWriter = require('xml-writer');
 var request = require("request");
 
+// Modules used for analyze page
+var fs = require('fs');
+var busboy = require('connect-busboy');
+
 var app = express();
 
 app.set('views', __dirname + '/views');
 app.use(express.static(__dirname + '/public'));
-app.use(bodyParser());
+app.use(bodyParser());//{keepExtensions:true,uploadDir: __dirname + '/public/uploads'}));
+
+app.use(busboy()); 
 // ejs (embedded javascript) used as the template engine
 app.engine('html', require('ejs').renderFile);
 app.use(cookieParser('Ronaldinho'));
@@ -26,7 +32,7 @@ app.use(flash());
 //'database' of users
 //Each user is a property in this object whose value is that user's pw.
 // EG if a user's login is mike/hello then users['mike'] == "hello"
-var users = {};
+var users = {russell:"howdy"};
 
 app.get('/', function(req,res) {
 	res.render('login.ejs', {
@@ -72,7 +78,7 @@ app.post('/user', function(req,res) {
 app.post('/login', function(req,res) {
 	if(req.body.password === users[req.body.user]) {
 		req.session.user = req.body.user;
-		res.redirect('/about');
+		res.redirect('/analyze');
 	} else {
 		req.flash('error', "Username or password incorrect.");
 		res.redirect('/');
@@ -90,6 +96,20 @@ app.get('/analyze', function(req,res) {
 		user: req.session.user
 	});
 });
+
+app.post('/uploadfile', function(req, res) {
+    var fstream;
+    req.pipe(req.busboy);
+    req.busboy.on('file', function (fieldname, file, filename) {
+        console.log("Uploading: " + filename); 
+        fstream = fs.createWriteStream(__dirname + '/public/uploads/' + filename);
+        file.pipe(fstream);
+        fstream.on('close', function () {
+            res.redirect('back');
+        });
+    });
+});
+
 
 var port = Number(process.env.PORT || 8001);
 app.listen(port);

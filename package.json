@@ -11,6 +11,7 @@
     "ejs": "1.x",
     "xml-writer": "1.x",
     "node-jsxml": "0.x",
-    "request": "2.x"
+    "request": "2.x",
+    "connect-busboy": "0.x"
   }
 }

@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
 	<title>TCC 2014 APIs: Agile Powerful Intuitive</title>
+    <script src="./js/dropzone.js"></script>
 	<link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/tcc_api.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/dropzone.css">
+    
 </head>
 <body class='body-main'>
 	<nav class="navbar navbar-inverse" role="navigation">
@@ -17,6 +20,12 @@
 	</nav>
 	<div class="main">
 		<h1>Here will be a section to upload a file to analyze in web authoring.</h1>
+        <div id="dropzone">
+          <form action="/uploadfile" class="dropzone" id="demo-upload" >  
+              <input type="hidden" name="userName" value="user"/>
+          </form>
+        </div>
+        
 	</div>
 </body>
 </html>
