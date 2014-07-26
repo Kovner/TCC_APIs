@@ -12,6 +12,8 @@
     "xml-writer": "1.x",
     "node-jsxml": "0.x",
     "request": "2.x",
-    "connect-busboy": "0.x"
+    "connect-busboy": "0.x",
+    "xml2js": "0.4.x"  
+      
   }
 }

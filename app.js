@@ -12,15 +12,16 @@ var jsxml = require("node-jsxml");
 var XMLWriter = require('xml-writer');
 var request = require("request");
 
-// Modules used for analyze page
+// Modules used for uploading files and writing to the file system
 var fs = require('fs');
 var busboy = require('connect-busboy');
+var parseString = require('xml2js').parseString;
 
 var app = express();
 
 app.set('views', __dirname + '/views');
 app.use(express.static(__dirname + '/public'));
-app.use(bodyParser());//{keepExtensions:true,uploadDir: __dirname + '/public/uploads'}));
+app.use(bodyParser());
 
 app.use(busboy()); 
 // ejs (embedded javascript) used as the template engine
@@ -33,6 +34,19 @@ app.use(flash());
 //Each user is a property in this object whose value is that user's pw.
 // EG if a user's login is mike/hello then users['mike'] == "hello"
 var users = {russell:"howdy"};
+
+//Variables we'll use throughout the app
+
+// admin username & pw: OF COURSE you won't hard-code these in the real world:
+var admin = {username: "admin", password: "adminpw"};
+
+//location of the server
+var tableauServer = "http://winTableau";
+
+//variable to hold auth token of an admin user so we can do stuff easily
+var adminAuthToken; 
+
+
 
 app.get('/', function(req,res) {
 	res.render('login.ejs', {
@@ -92,9 +106,13 @@ app.get('/about', function(req, res) {
 });
 
 app.get('/analyze', function(req,res) {
-	res.render('analyze.ejs', {
-		user: req.session.user
-	});
+    
+    getDataSources( function(datasources) {
+        console.log ("analyze: " + datasources);
+        res.render('analyze.ejs', {
+            user: req.session.user, datasource: datasources
+        });
+    });
 });
 
 app.post('/uploadfile', function(req, res) {
@@ -120,11 +138,11 @@ console.log("Listening on port " + port);
 var createUser = function(user, callback) {
 	// First we need to login to the REST API as an admin.
 	var loginxml = new XMLWriter();
-	loginxml.startElement('tsRequest').startElement('credentials').writeAttribute('name', 'admin')
-		.writeAttribute('password', 'admin').startElement('site').writeAttribute('contentUrl', '');
+	loginxml.startElement('tsRequest').startElement('credentials').writeAttribute('name', admin.username)
+		.writeAttribute('password', admin.password).startElement('site').writeAttribute('contentUrl', '');
 	request.post( 
 		{
-			url: 'http://mkovner-vm/api/2.0/auth/signin',
+			url: tableauServer + '/api/2.0/auth/signin',
 			body: loginxml.toString(),
 			headers: {'Content-Type': 'text/xml'}
 		},
@@ -146,7 +164,7 @@ var createUser = function(user, callback) {
 				// add our user to.
 				request(
 					{
-						url: 'http://mkovner-vm/api/2.0/sites/rest?key=name',
+						url: tableauServer + '/api/2.0/sites/rest?key=name',
 						headers: {
 							'Content-Type': 'text/xml',
 							'X-Tableau-Auth': authToken
@@ -173,7 +191,7 @@ var createUser = function(user, callback) {
 							.writeAttribute('suppressGettingStarted', 'true');
 						request.post( 
 							{
-								url: 'http://mkovner-vm/api/2.0/sites/' + siteID + '/users/',
+								url:  tableauServer + '/api/2.0/sites/' + siteID + '/users/',
 								body: userxml.toString(),
 								headers: {
 									'Content-Type': 'text/xml',
@@ -202,3 +220,73 @@ var createUser = function(user, callback) {
 		}
 	);	
 }
+
+var adminLogin = function (callback){
+    // Used to Login an Admin - First we need to login to the REST API as an admin.
+	var loginxml = new XMLWriter();
+	loginxml.startElement('tsRequest').startElement('credentials').writeAttribute('name', admin.username)
+		.writeAttribute('password', admin.password).startElement('site').writeAttribute('contentUrl', '');
+	request.post( 
+		{
+			url: tableauServer + '/api/2.0/auth/signin',
+			body: loginxml.toString(),
+			headers: {'Content-Type': 'text/xml'}
+		},
+		// Express requests take a 'callback' function which will be called when the request has been processed. The
+		// response from the server will be contained in the 3rd parameter 'body'.
+		function(err, response, body) {
+			if(err) {
+				callback(err);
+				return;
+			} else {
+				// In order to grab information from the response, we turn it into an xml object and use a module
+				// called node-jsxml to parse the xml. node-jsxml allows us to use child(), attribute(), and some other functions
+				// to locate specific elements and pieces of information that we need.
+				// Here, we need to grab the 'token' attribute and store it in the session cookie.
+				var authXML = new jsxml.XML(body);
+				adminAuthToken = authXML.child('credentials').attribute("token").getValue();
+				console.log("Auth token: " + adminAuthToken);
+                callback(null);
+                return;
+            }
+        }
+    );
+    
+}
+
+var getDataSources = function (callback) {
+
+    // Lazy, I don't want to bother lookig up the site ID of my defaut site. You should.
+    siteID = '94f96a34-64e7-49f2-8624-e77426bbd490';
+    
+    //Array which'll contain data sources
+    var dataSourceArray = [];
+    
+    //Login as admin, then get data source list for a site using REST API
+    adminLogin(function () {
+
+        var options = {
+            url: tableauServer + '/api/2.0/sites/' + siteID + '/datasources',
+            headers: {
+                'Content-Type': 'text/xml',
+                'X-Tableau-Auth': adminAuthToken
+            }
+        };
+
+        request.get(options, function (error, response, body) {
+            parseString(body, function (err, result) {
+                //console.log(JSON.stringify(result.tsResponse.datasources[0].datasource, null, 2))
+                var datasources = result.tsResponse.datasources[0].datasource;
+                
+                for (i = 0; i < datasources.length; i++) {
+                    console.log("Data Source: " + datasources[i].$.name);
+                    dataSourceArray.push(datasources[i].$.name);
+                }
+                console.log("inner: " + dataSourceArray.length);
+
+                callback(dataSourceArray);
+            });
+        });
+    });
+}
+

@@ -3,15 +3,16 @@
 <head>
 	<title>TCC 2014 APIs: Agile Powerful Intuitive</title>
     <script src="./js/dropzone.js"></script>
-	<link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css">
-	<link rel="stylesheet" type="text/css" href="/stylesheets/tcc_api.css">
+    
+    <link rel="stylesheet" type="text/css" href="/stylesheets/tcc_api.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/stylesheets/dropzone.css">
     
 </head>
 <body class='body-main'>
 	<nav class="navbar navbar-inverse" role="navigation">
 		<a class='navbar-brand'><img src="/images/tableau_small.png"></a>
-		<h1 class='navbar-text'>TCC</h3>
+		<h1 class='navbar-text'>TC</h3>
 		<ul class="nav navbar-nav">
 			<li><a href='/about'>About</a></li>
 			<li class='active'><a href='#'>Analyze your Own Data</a></li>		
@@ -19,11 +20,21 @@
 		<p class="navbar-text navbar-right">Signed in as <%=user%></p>
 	</nav>
 	<div class="main">
-		<h1>Here will be a section to upload a file to analyze in web authoring.</h1>
+		<h2 class="analyzeSubheader" >Add a new data source, or launch web authoring.</h2>
         <div id="dropzone">
           <form action="/uploadfile" class="dropzone" id="demo-upload" >  
               <input type="hidden" name="userName" value="user"/>
           </form>
+        </div>
+        <div class="datasource">
+            These are the data sources on your server. <b>Click</b> one to author a new workbook.
+          <ul class="analyzeList">            
+              <% datasource.forEach(function(datasources){ %>      
+                  <li class="analyzeListItem">
+                      <%=datasources%>
+                  </li>          
+              <% }); %>
+           </ul>
         </div>
         
 	</div>

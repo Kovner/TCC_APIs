@@ -99,3 +99,33 @@ h1,h2,h3,h4,h5,p {
     background: #1C596B;
 }
 
+
+.datasource {
+    text-align: center;
+}
+
+
+
+.analyzeSubheader {
+    font-size: 20px;
+    text-align: center;
+}
+
+.analyzeList {
+    padding-top: 20px;
+     margin-left: 35%; 
+    list-style-image:url('/images/tableau_super-small.png');
+}
+
+.analyzeListItem {
+    padding-top: 0px;
+    color: #6D6968;
+    text-align: left;
+}
+
+.analyzeListItem:hover
+{ 
+   
+    color: #E0E0E0;
+}
+
