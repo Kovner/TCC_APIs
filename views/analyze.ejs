@@ -3,7 +3,8 @@
 <head>
 	<title>TCC 2014 APIs: Agile Powerful Intuitive</title>
     <script src="./js/dropzone.js"></script>
-    
+    <script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
+       
     <link rel="stylesheet" type="text/css" href="/stylesheets/tcc_api.css">
     <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/stylesheets/dropzone.css">
@@ -22,8 +23,9 @@
 	<div class="main">
 		<h2 class="analyzeSubheader" >Add a new data source, or launch web authoring.</h2>
         <div id="dropzone">
-          <form action="/uploadfile" class="dropzone" id="demo-upload" >  
+          <form action="/uploadfile" id="demo-upload" >  
               <input type="hidden" name="userName" value="user"/>
+              <div class="dz-default dz-message"><span>Drop files here to upload</span></div>
           </form>
         </div>
         <div class="datasource">
@@ -39,4 +41,18 @@
         
 	</div>
 </body>
+    <script type="text/javascript"> 
+        $(function(){
+            var myDropzone = new Dropzone("form#demo-upload");
+            $("form#demo-upload").addClass("dropzone");
+            myDropzone.on("complete", function(file) {
+                console.log ("Time to kick of TDE API for " + file.name);
+                //Tickle the /processfile route to process the file and upload it
+                $.get( "/processfile?fileName="+file.name, function( data ) {
+                  alert( "Load was performed." );
+                });
+                
+            });
+        });
+        </script>
 </html>

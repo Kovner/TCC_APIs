@@ -12,10 +12,13 @@ var jsxml = require("node-jsxml");
 var XMLWriter = require('xml-writer');
 var request = require("request");
 
-// Modules used for uploading files and writing to the file system
+// Modules used for uploading files, writing to the file system, and publishing to Tableau
 var fs = require('fs');
 var busboy = require('connect-busboy');
 var parseString = require('xml2js').parseString;
+var PythonShell = require('python-shell');
+var exec = require('exec');
+
 
 var app = express();
 
@@ -116,6 +119,8 @@ app.get('/analyze', function(req,res) {
 });
 
 app.post('/uploadfile', function(req, res) {
+    
+    // Called to deal with POSTed file by client
     var fstream;
     req.pipe(req.busboy);
     req.busboy.on('file', function (fieldname, file, filename) {
@@ -123,11 +128,66 @@ app.post('/uploadfile', function(req, res) {
         fstream = fs.createWriteStream(__dirname + '/public/uploads/' + filename);
         file.pipe(fstream);
         fstream.on('close', function () {
-            res.redirect('back');
+        res.redirect('back');
         });
     });
 });
 
+app.get('/processfile', function(req, res){
+
+    // Called by client after a file has completely uploaded
+    
+    // Filename to work with
+    var fileName = req.query.fileName;
+    console.log("File to process: " + fileName);
+    var options = {
+      mode: 'text',
+      scriptPath: 'C:\\node\\public\\js'
+    };
+	
+    PythonShell.run('csv_2_tde.py', options, function (err, results) {
+      if (err) throw err;
+      // results is an array consisting of messages collected during execution
+      //console.log('results: %j', JSON.stringify(results));
+	  console.log(results[results.length -2]);
+	  console.log(results[results.length -1]);
+	  
+	  
+		console.log ("Publishing Data Source");
+		
+		argArray  = [];
+		// Args to pass to exec module
+		argArray.push('tabcmd');
+		argArray.push('publish');
+		argArray.push('c:\\node\\public\\uploads\\' + fileName.slice(0,-4) + '.tde');
+		argArray.push('-p' + admin.password);
+		argArray.push('-u' + admin.username);
+		argArray.push('-n' + fileName.slice(0,-4)); // Friendly name of data source
+
+
+		//First, TabCmd Publish
+		exec( argArray, function(err, out, code) {
+		  if (err instanceof Error)
+			throw err;
+		  process.stderr.write(err);
+		  process.stdout.write(out);
+		  
+			  //Then, logout
+			  exec(['tabcmd', 'logout'], function(err, out, code) {
+
+				  if (err instanceof Error)
+					throw err;
+				  process.stderr.write(err);
+				  process.stdout.write(out);
+				 // process.exit(code);		
+				res.end();
+				});
+		});
+		
+	  
+    });
+	res.end();
+});
 
 var port = Number(process.env.PORT || 8001);
 app.listen(port);
@@ -244,7 +304,15 @@ var adminLogin = function (callback){
 				// to locate specific elements and pieces of information that we need.
 				// Here, we need to grab the 'token' attribute and store it in the session cookie.
 				var authXML = new jsxml.XML(body);
-				adminAuthToken = authXML.child('credentials').attribute("token").getValue();
+				try {
+                    adminAuthToken = authXML.child('credentials').attribute("token").getValue();
+                }
+                catch (err)
+                {
+                    console.log ("Your servername, username or password are incorrect");
+                    adminAuthToken = -1;
+                }
+                
 				console.log("Auth token: " + adminAuthToken);
                 callback(null);
                 return;
@@ -265,6 +333,7 @@ var getDataSources = function (callback) {
     //Login as admin, then get data source list for a site using REST API
     adminLogin(function () {
 
+        if (adminAuthToken == -1) {return};
         var options = {
             url: tableauServer + '/api/2.0/sites/' + siteID + '/datasources',
             headers: {
@@ -282,7 +351,6 @@ var getDataSources = function (callback) {
                     console.log("Data Source: " + datasources[i].$.name);
                     dataSourceArray.push(datasources[i].$.name);
                 }
-                console.log("inner: " + dataSourceArray.length);
 
                 callback(dataSourceArray);
             });
