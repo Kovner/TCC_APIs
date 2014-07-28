@@ -58,8 +58,10 @@ h1,h2,h3,h4,h5,p {
      background: #313032;
 }
 
+.main,
 .body-main {
     background: #f0f0f0;
+    height: 100%;
 }
 
 .navbar {
@@ -73,7 +75,7 @@ h1,h2,h3,h4,h5,p {
 }
 
 .navbar h1 {
-    padding-top: 5px;
+    padding.ma-top: 5px;
     padding-bottom: 5px;
 }
 
@@ -128,4 +130,11 @@ h1,h2,h3,h4,h5,p {
    
     color: #E0E0E0;
 }
+
+.vizFrame
+{
+    height: 100%;
+    width: 100%;
+}
+
 

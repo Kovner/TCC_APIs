@@ -36,7 +36,7 @@ app.use(flash());
 //'database' of users
 //Each user is a property in this object whose value is that user's pw.
 // EG if a user's login is mike/hello then users['mike'] == "hello"
-var users = {russell:"howdy"};
+var users = {russch:"howdy"};
 
 //Variables we'll use throughout the app
 
@@ -186,7 +186,33 @@ app.get('/processfile', function(req, res){
 		
 	  
     });
-	res.end();
+	
+});
+
+app.get('/trustedticket', function(req, res) {
+    
+    var user = req.query.user;
+    console.log(user);
+    request.post( 
+		{
+			url: tableauServer + '/trusted',
+			form: { 'username': user }
+		},
+		// Express requests take a 'callback' function which will be called when the request has been processed. The
+		// response from the server will be contained in the 3rd parameter 'body'.
+		function(err, response, body) {
+			if(err) {
+				callback(err);
+				return;
+			} else {
+				// In order to grab information from the response, we turn it into an xml object and use a module
+				// called node-jsxml to parse the xml. node-jsxml allows us to use child(), attribute(), and some other functions
+				// to locate specific elements and pieces of information that we need.
+				// Here, we need to grab the 'token' attribute and store it in the session cookie.
+				var ticket = body;
+				res.send(body);
+            }
+        });
 });
 
 var port = Number(process.env.PORT || 8001);

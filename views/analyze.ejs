@@ -20,7 +20,7 @@
 		</ul>
 		<p class="navbar-text navbar-right">Signed in as <%=user%></p>
 	</nav>
-	<div class="main">
+	<div class="main" id="mainDiv">
 		<h2 class="analyzeSubheader" >Add a new data source, or launch web authoring.</h2>
         <div id="dropzone">
           <form action="/uploadfile" id="demo-upload" >  
@@ -32,7 +32,7 @@
             These are the data sources on your server. <b>Click</b> one to author a new workbook.
           <ul class="analyzeList">            
               <% datasource.forEach(function(datasources){ %>      
-                  <li class="analyzeListItem">
+                  <li class="analyzeListItem" onclick="launchDesigner(this.innerHTML)">
                       <%=datasources%>
                   </li>          
               <% }); %>
@@ -49,10 +49,26 @@
                 console.log ("Time to kick of TDE API for " + file.name);
                 //Tickle the /processfile route to process the file and upload it
                 $.get( "/processfile?fileName="+file.name, function( data ) {
-                  alert( "Load was performed." );
+                  //When processing is complete on the server, reload the page
+                  location.reload(true)
                 });
                 
             });
         });
+        
+        function launchDesigner(li){
+            // remove spaces and single quotes
+            var dataSourceTarget = li.replace(/\s|\'+/g, "");
+            // Get rid of other UI
+            $('#mainDiv').empty();
+            // Get a trusted ticker via app's built in route handler
+            $.get( "/trustedticket?user=<%=user%>"  , function( data ) {
+              // Add frame to page instead
+              var iframe = $('<iframe class="vizFrame" src="http://localhost/trusted/' + data + '/authoringNewWorkbook/' + dataSourceTarget + '" frameborder="0" scrolling="no" id="myFrame"></iframe>');
+              $('#mainDiv').append(iframe);    
+            });
+
+        }
+        
         </script>
 </html>
