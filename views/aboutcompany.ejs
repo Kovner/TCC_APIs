@@ -4,6 +4,8 @@
 	<title>TCC 2014 APIs: Agile Powerful Intuitive</title>
 	<link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/tcc_api.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/aboutcompany.css">
+	<script src="http://mkovner-vm/javascripts/api/tableau_v8.debug.js"></script>
 </head>
 <body class='body-main'>
 	<nav class="navbar navbar-inverse" role="navigation">
@@ -16,8 +18,11 @@
 		<p class="navbar-text navbar-right">Signed in as <%=user%></p>
 	</nav>
 	<div class="main">
-		<h1>Here will be a viz that uses the javascript api. Maybe a storyboard with custom navigation.</h1>
-		<h3>ticket: <%=ticket%></h3>
+		<div id="myVizContainer"></div>
 	</div>
+	<script type="text/javascript">
+		ticket = '<%=ticket%>';
+	</script>
+	<script type="text/javascript" src="/javascripts/aboutcompany.js"></script>
 </body>
 </html>
