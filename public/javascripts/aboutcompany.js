@@ -5,7 +5,8 @@ window.onload = function() {
 	/********** Bootstrap the Viz **********/
 	
 	var placeholder = document.getElementById("myVizContainer");
-	var url = "http://mkovner-vm/trusted/" + ticket + "/t/rest/views/AboutCerebral/Story1";
+	//var url = "http://mkovner-vm/trusted/" + ticket + "/t/rest/views/AboutCerebral/Story1"; //Kovner's
+	var url = "http://winTableau/trusted/" + ticket + "/t/rest/views/AboutCerebral/Story1"; //Russell's
 	var options = {
 		width: "900px",
 		height: "750px",
