@@ -44,7 +44,9 @@ var users = {russch:"howdy"};
 var admin = {username: "admin", password: "adminpw"};
 
 //location of the server
-var tableauServer = "http://winTableau";
+//var tableauServer = "http://winTableau"; //Russell's
+var tableauServer = "http://mkovner-vm"; //Kovner's
+
 
 //variable to hold auth token of an admin user so we can do stuff easily
 var adminAuthToken; 
@@ -95,7 +97,7 @@ app.post('/user', function(req,res) {
 app.post('/login', function(req,res) {
 	if(req.body.password === users[req.body.user]) {
 		req.session.user = req.body.user;
-		res.redirect('/analyze');
+		res.redirect('/about');
 	} else {
 		req.flash('error', "Username or password incorrect.");
 		res.redirect('/');
@@ -103,9 +105,30 @@ app.post('/login', function(req,res) {
 });
 
 app.get('/about', function(req, res) {
-	res.render('aboutcompany.ejs', {
-		user: req.session.user
-	});
+	//First we get a ticket, then we pass that and the username to the ejs that we render
+	console.log(req.session.user);
+    request.post( 
+		{
+			url: tableauServer + '/trusted',
+			form: { 
+				'username': req.session.user ,
+				'target_site': 'rest'
+			}
+		},
+		// Express requests take a 'callback' function which will be called when the request has been processed. The
+		// response from the server will be contained in the 3rd parameter 'body'.
+		function(err, response, body) {
+			if(err) {
+				callback(err);
+				return;
+			} else {
+				res.render('aboutcompany.ejs', {
+					user: req.session.user,
+					ticket: body
+				});
+            }
+        }
+    );
 });
 
 app.get('/analyze', function(req,res) {
@@ -192,7 +215,6 @@ app.get('/processfile', function(req, res){
 app.get('/trustedticket', function(req, res) {
     
     var user = req.query.user;
-    console.log(user);
     request.post( 
 		{
 			url: tableauServer + '/trusted',
@@ -205,11 +227,8 @@ app.get('/trustedticket', function(req, res) {
 				callback(err);
 				return;
 			} else {
-				// In order to grab information from the response, we turn it into an xml object and use a module
-				// called node-jsxml to parse the xml. node-jsxml allows us to use child(), attribute(), and some other functions
-				// to locate specific elements and pieces of information that we need.
-				// Here, we need to grab the 'token' attribute and store it in the session cookie.
 				var ticket = body;
+				console.log(body);
 				res.send(body);
             }
         });
