@@ -12,6 +12,15 @@ window.onload = function() {
 		hideTabs: true,
 		hideToolbar: true,
 		onFirstInteractive: function() {
+			var story = viz.getWorkbook().getActiveSheet();
+			var numPoints = story.getStoryPointsInfo().length;
+			setInterval(function() {
+				if(story.getActiveStoryPoint().getIndex() === numPoints-1) {
+					story.activateStoryPointAsync(0);
+				} else {
+					story.activateNextStoryPointAsync();
+				}
+			},6500);
 		}
 	};
 	
