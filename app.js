@@ -167,7 +167,7 @@ app.get('/processfile', function(req, res){
       scriptPath: 'C:\\node\\public\\js'
     };
 	
-    PythonShell.run('c:\\node\\public\\csv_2_tde.py', options, function (err, results) {
+    PythonShell.run('csv_2_tde.py', options, function (err, results) {
       if (err) throw err;
       // results is an array consisting of messages collected during execution
       //console.log('results: %j', JSON.stringify(results));
@@ -184,6 +184,7 @@ app.get('/processfile', function(req, res){
 		argArray.push('c:\\node\\public\\uploads\\' + fileName.slice(0,-4) + '.tde');
 		argArray.push('-p' + admin.password);
 		argArray.push('-u' + admin.username);
+        argArray.push('-trest');
 		argArray.push('-n' + fileName.slice(0,-4)); // Friendly name of data source
 
 
