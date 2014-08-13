@@ -58,14 +58,14 @@
         });
         
         function launchDesigner(li){
-            // remove spaces and single quotes
-            var dataSourceTarget = li.replace(/\s|\'+/g, "");
+            // remove spaces, single quotes and parenthesis - you may need to do more of this. 
+            var dataSourceTarget = li.replace(/[\s'()]+/g, "");;
             // Get rid of other UI
             $('#mainDiv').empty();
             // Get a trusted ticker via app's built in route handler
             $.get( "/trustedticket?user=<%=user%>"  , function( data ) {
               // Add frame to page instead
-              var iframe = $('<iframe class="vizFrame" src="http://localhost/trusted/' + data + '/authoringNewWorkbook/' + dataSourceTarget + '" frameborder="0" scrolling="no" id="myFrame"></iframe>');
+              var iframe = $('<iframe class="vizFrame" src="http://winTableau/trusted/' + data + '/t/rest/authoringNewWorkbook/' + dataSourceTarget + '" frameborder="0" scrolling="no" id="myFrame"></iframe>');
               $('#mainDiv').append(iframe);    
             });
 

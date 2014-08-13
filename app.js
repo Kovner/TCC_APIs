@@ -134,7 +134,6 @@ app.get('/about', function(req, res) {
 app.get('/analyze', function(req,res) {
     
     getDataSources( function(datasources) {
-        console.log ("analyze: " + datasources);
         res.render('analyze.ejs', {
             user: req.session.user, datasource: datasources
         });
@@ -168,7 +167,7 @@ app.get('/processfile', function(req, res){
       scriptPath: 'C:\\node\\public\\js'
     };
 	
-    PythonShell.run('csv_2_tde.py', options, function (err, results) {
+    PythonShell.run('c:\\node\\public\\csv_2_tde.py', options, function (err, results) {
       if (err) throw err;
       // results is an array consisting of messages collected during execution
       //console.log('results: %j', JSON.stringify(results));
@@ -218,7 +217,8 @@ app.get('/trustedticket', function(req, res) {
     request.post( 
 		{
 			url: tableauServer + '/trusted',
-			form: { 'username': user }
+			form: { 'username': user,
+                    'target_site': 'rest'}
 		},
 		// Express requests take a 'callback' function which will be called when the request has been processed. The
 		// response from the server will be contained in the 3rd parameter 'body'.
@@ -369,37 +369,63 @@ var adminLogin = function (callback){
 
 var getDataSources = function (callback) {
 
-    // Lazy, I don't want to bother lookig up the site ID of my defaut site. You should.
-    siteID = '94f96a34-64e7-49f2-8624-e77426bbd490';
-    
+
     //Array which'll contain data sources
     var dataSourceArray = [];
-    
-    //Login as admin, then get data source list for a site using REST API
+
+    // Login as admin, get SiteID for the "rest" site, then get data source list for "rest" site using REST API
+    // Note that we're NOT authenticating as the user who just logged into the app. They may more may have access to any data sources
+    // and for the demo we want to show data sources regardless of permissions.
+
     adminLogin(function () {
 
-        if (adminAuthToken == -1) {return};
-        var options = {
-            url: tableauServer + '/api/2.0/sites/' + siteID + '/datasources',
-            headers: {
-                'Content-Type': 'text/xml',
-                'X-Tableau-Auth': adminAuthToken
-            }
+        if (adminAuthToken == -1) {
+            return
         };
 
-        request.get(options, function (error, response, body) {
-            parseString(body, function (err, result) {
-                //console.log(JSON.stringify(result.tsResponse.datasources[0].datasource, null, 2))
-                var datasources = result.tsResponse.datasources[0].datasource;
-                
-                for (i = 0; i < datasources.length; i++) {
-                    console.log("Data Source: " + datasources[i].$.name);
-                    dataSourceArray.push(datasources[i].$.name);
+        request({
+                url: tableauServer + '/api/2.0/sites/rest?key=name',
+                headers: {
+                    'Content-Type': 'text/xml',
+                    'X-Tableau-Auth': adminAuthToken
                 }
+            },
+            // pull site id from body    
+            function (err, response, body) {
+                if (err) {
+                    callback(err);
+                    return;
+                } else {
+                    var siteXML = new jsxml.XML(body);
+                    var siteID = siteXML.child('site').attribute("id").getValue();
+                    console.log("site id: " + siteID);
 
-                callback(dataSourceArray);
+                    // use siteID to get list of data sources FROM said site
+                    var options = {
+                        url: tableauServer + '/api/2.0/sites/' + siteID + '/datasources',
+                        headers: {
+                            'Content-Type': 'text/xml',
+                            'X-Tableau-Auth': adminAuthToken
+                        }
+                    };
+                    request.get(options, function (error, response, body) {
+                        parseString(body, function (err, result) {
+                            //console.log(JSON.stringify(result.tsResponse.datasources[0].datasource, null, 2))
+                            var datasources = result.tsResponse.datasources[0].datasource;
+
+                            for (i = 0; i < datasources.length; i++) {
+                                console.log("Data Source: " + datasources[i].$.name);
+                                dataSourceArray.push(datasources[i].$.name);
+                            }
+
+                            callback(dataSourceArray);
+                        });
+                    });
+                }
             });
-        });
     });
 }
+
+
+
 
