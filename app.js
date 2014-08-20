@@ -44,8 +44,8 @@ var users = {russch:"howdy"};
 var admin = {username: "admin", password: "adminpw"};
 
 //location of the server
-var tableauServer = "http://winTableau"; //Russell's
-// var tableauServer = "http://mkovner-vm"; //Kovner's
+// var tableauServer = "http://winTableau"; //Russell's
+var tableauServer = "http://mkovner-vm"; //Kovner's
 
 
 //variable to hold auth token of an admin user so we can do stuff easily
