@@ -45,7 +45,7 @@ var admin = {username: "admin", password: "adminpw"};
 
 //location of the server
 var tableauServer = "http://winTableau"; //Russell's
-//var tableauServer = "http://mkovner-vm"; //Kovner's
+// var tableauServer = "http://mkovner-vm"; //Kovner's
 
 
 //variable to hold auth token of an admin user so we can do stuff easily
@@ -258,7 +258,11 @@ var createUser = function(user, callback) {
 			if(err) {
 				callback(err);
 				return;
+			} else if(response.statusCode != 200) {
+				callback(response.statusCode);
+				return;
 			} else {
+				//console.log("status code: " + response.statusCode);
 				// In order to grab information from the response, we turn it into an xml object and use a module
 				// called node-jsxml to parse the xml. node-jsxml allows us to use child(), attribute(), and some other functions
 				// to locate specific elements and pieces of information that we need.
@@ -280,6 +284,9 @@ var createUser = function(user, callback) {
 					function(err, response, body) {
 						if(err) {
 							callback(err);
+							return;
+						} else if(response.statusCode != 200) {
+							callback(response.statusCode);
 							return;
 						} else {
 							var siteXML = new jsxml.XML(body);
@@ -307,6 +314,9 @@ var createUser = function(user, callback) {
 							function(err, response, body) {
 								if(err) {
 									callback(err);
+									return;
+								} else if(response.statusCode != 201) {
+									callback(response.statusCode);
 									return;
 								} else {
 									//If the request was succesful we get xml back that contains the id and name of the added user.
@@ -418,7 +428,6 @@ var getDataSources = function (callback) {
                                 console.log("Data Source: " + datasources[i].$.name);
                                 dataSourceArray.push(datasources[i].$.name);
                             }
-
                             callback(dataSourceArray);
                         });
                     });
