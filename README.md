@@ -24,7 +24,7 @@ Installation
  - To begin, you must download and install [Node.Js] for your operating system (Windows, Linux)
  - You must also install and configure the **Python**-based [Extract API].
  - And what good is the API without Python itself? Install [Python 2.7.X] for your OS. 
- - Next, download the code using the **Download** button to your right
+ - Next, download the code using the **Download ZIP** button to your upper-right
  - Unzip to c:\node, and navigate there on the command-line.
  - Execute these commands to prepare the app
  
@@ -33,7 +33,7 @@ npm install
 ```
 
 ##### Note: 
-This sample application has only been "tested" (note the quotes?!) on Windows. It should work on Linux too. If it doesn't...well, you're a Linux person..which means you can probably troublshoot this yourself.
+This sample application has only been "tested" (note the quotes?!) on Windows. It should work on Linux too. If it doesn't...well, you're a Linux person..which means you are smart can probably troubleshoot this yourself. Sorry for the OS bigotry.
   
   
 To run the application, type:
@@ -95,7 +95,7 @@ Error: TypeError: an integer is required
 
  Your CSV file most likely has mixed data types in the same column. For example, the code was expecting an INT based on the majority of the other values in the column, but this row just handed us a STRING. 
  
- What can you do? In /public/js/csv_2_tde.py, you can temporarily set the **rowoutput** flag (line 14) to **True**. Then navigate to /public/js and run the script manually to see debugging information. This extra information will tell you the row on which the script failed so you can fix it. 
+ What can you do? In /public/js/csv_2_tde.py, you can temporarily set the **rowoutput** flag (line 14) to **True**. Then navigate to /public/js and run the script manually to see debugging information. This extra information will tell you the row on which the script failed so you can fix your data. Don't forget to change **rowoutput** back to False.
  
  #####I used to be able to process files with no problem. Now I see an error like the one above when I attempt to upload a file I KNOW is good. Why?
  
