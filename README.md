@@ -97,12 +97,11 @@ Error: TypeError: an integer is required
  
  What can you do? In /public/js/csv_2_tde.py, you can temporarily set the **rowoutput** flag (line 14) to **True**. Then navigate to /public/js and run the script manually to see debugging information. This extra information will tell you the row on which the script failed so you can fix your data. Don't forget to change **rowoutput** back to False.
  
- #####I used to be able to process files with no problem. Now I see an error like the one above when I attempt to upload a file I KNOW is good. Why?
- 
- 
+#####I used to be able to process files with no problem. Now I see an error like the one above when I attempt to upload a file I KNOW is good. Why?
 The csv_2_tde.py script attempts to process ANY csv file it sees in the /public/uploads folder. You probably have an older, "broken" CSV file still sitting there and the script is trying to process it (and failing) BEFORE it  gets to your "known good file". Clean up the /uploads folder and try again.
  
- #####Help! I can't this running! I need technical support! Sorry about that, but this is a proof-of-concept sample application - not something that is production ready. It isn't supported by Tableau. In a pinch you might get someone in the [Tableau Developer Community] to give you a push in the right direction, however.
+#####Help! I can't this running! I see an error or something! I need technical support! 
+ Sorry about that, but this is a proof-of-concept sample application - not something that is production ready. It isn't supported by Tableau. In a pinch you might get someone in the [Tableau Developer Community] to give you a push in the right direction, however.
  
 
 Special thanks to [Ryan Robitialle] for writing the Python script years ago so that we don't have to!
