@@ -1,7 +1,7 @@
 Tableau Conference Sample Application
 =========
 
-This is sample code, and is not supported by Tableau. Please be kind and don't call Techincal Support for help - they don't know what this is!
+This is sample code, and is not supported by Tableau. Please be kind and don't call Technical Support for help - they don't know what this is!
 
 What does it do?
 
@@ -93,17 +93,19 @@ Error: TypeError: an integer is required
       , c_int(value)
  ```     
 
- Your CSV file most likely has mixed data types in the same field. For example, the code was expecting an INT based on the majority of the other values in the column, but this row just handed us a STRING. 
+ Your CSV file most likely has mixed data types in the same column. For example, the code was expecting an INT based on the majority of the other values in the column, but this row just handed us a STRING. 
  
  What can you do? In /public/js/csv_2_tde.py, you can temporarily set the **rowoutput** flag (line 14) to **True**. Then navigate to /public/js and run the script manually to see debugging information. This extra information will tell you the row on which the script failed so you can fix it. 
  
- ##### I used to be able to process files with no problem. Now I an error like the one above when I attempt to upload a file I KNOW is good. Why?
+ #####I used to be able to process files with no problem. Now I see an error like the one above when I attempt to upload a file I KNOW is good. Why?
  
  
-The csv_2_tde.py script attempts to process ANY csv file it sees in the /public/uploads folder. It is likely an older, "broken" CSV file is still sitting there and the script is trying to process it (and failing) BEFORE it even gets to your "known good file". Clean up the /uploads folder and try again.
+The csv_2_tde.py script attempts to process ANY csv file it sees in the /public/uploads folder. You probably have an older, "broken" CSV file still sitting there and the script is trying to process it (and failing) BEFORE it  gets to your "known good file". Clean up the /uploads folder and try again.
  
+ #####Help! I can't this running! I need technical support! Sorry about that, but this is a proof-of-concept sample application - not something that is production ready. It isn't supported by Tableau. In a pinch you might get someone in the [Tableau Developer Community] to give you a push in the right direction, however.
  
- 
+
+Special thanks to [Ryan Robitialle] for writing the Python script years ago so that we don't have to!
 
 [PhantomJS]:http://phantomjs.org
 [Node.js]:http://nodejs.org/
@@ -111,6 +113,5 @@ The csv_2_tde.py script attempts to process ANY csv file it sees in the /public/
 [Python 2.7.X]:https://www.python.org/download/releases/2.7/
 [documentation]:http://onlinehelp.tableausoftware.com/current/server/en-us/help.htm#trusted_auth_trustIP.htm
 [Enable access]:http://kb.tableausoftware.com/articles/knowledgebase/creating-custom-administrative-views
-
-Special thanks to Ryan Robitialle for writing the Python script years ago so we didn't have to!
-
+[Tableau Developer Community]:http://community.tableausoftware.com/groups/dev-community
+[Ryan Robitialle]:http://ryrobes.com/
