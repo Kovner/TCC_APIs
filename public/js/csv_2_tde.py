@@ -3,7 +3,7 @@
 
 import csv, os, time
 from datetime import datetime
-import dataextract as tde #saves some typing, cause i'm a lazy fucker
+import dataextract as tde #saves some typing, cause i'm a lazy person
 
 ################ PARAMETERS FOR YOU, CODE MONKEY! ##########################
 cvsfilenamemask = '.csv' # can be explicit 'thisfile.csv' for one file - or open '.csv' for all that match
@@ -11,15 +11,15 @@ sourcedir = 'C:\\node\\public\\uploads\\' # need to double up the \\s | windows 
 targetdir = 'C:\\node\\public\\uploads\\' # can't be a share or UNC path
 csvdelimiter = ',' # obvious!
 csvquotechar = '"' # obvious!
-rowoutput = False # useful for debugging data errors / slows shit down a lot however
+rowoutput = False # useful for debugging data errors / slows stuff down a lot however
 ################ PARAMETERS FOR YOU, CODE MONKEY! ##########################
 
-# Note: if you have less than a few thousand rows, the progress bar will be a bit fucked looking.
+# Note: if you have less than a few thousand rows, the progress bar will be a bit odd looking.
 
 fileperf = dict() # for saving each files execution times
 
 # since the CSV module imports all fields as strings regardless of what they are..
-def datatyper(n):    # force some data types to figure shit out
+def datatyper(n):    # force some data types to figure stuff out
         try:         # kind of lame.... BUT IT WORKS
             x = int(n)
             return int(n)
@@ -40,7 +40,7 @@ def datatyper(n):    # force some data types to figure shit out
                                 return None
                             elif len(n) > 0:
                                 return str(n)
-                            else: # no need to return an empty string, let's NULL that shit out
+                            else: # no need to return an empty string, let's NULL that stuff out
                                 return None
 # end ugly data types function
 
@@ -122,7 +122,7 @@ for csvfilename in os.listdir("."):
             
         else: # WTF? No header? JERK.
             fieldnum = 0
-            #print 'If you don\'t have a header, how the fuck will you recognize the fields in Tableau?'
+            #print 'If you don\'t have a header, how will you recognize the fields in Tableau?'
             for f in csvreader.fieldnames:
                 dfields.append('field'+str(fieldnum))
                 fieldnum = fieldnum + 1
@@ -132,7 +132,7 @@ for csvfilename in os.listdir("."):
         for row in csvreader:
             for i in dfields:
                 dtypes.append(str(type(datatyper(row[i]))))
-            break # got shit, we're out
+            break # got stuff, we're out
 
         csvfile.seek(0) # BACK TO THE FRONT! (AGAIN!)
 
@@ -167,14 +167,14 @@ for csvfilename in os.listdir("."):
                 tableDef.addColumn(fieldname, 15) # if we get a weird type we don't recognize, just make it a string
         if rowoutput == True:
             print '***'
-            time.sleep(5) # wait 5 seconds so you can actually read shit!
+            time.sleep(5) # wait 5 seconds so you can actually read stuff!
 
-        # ok, lets print out the table def we just made, for shits and giggles
+        # ok, lets print out the table def we just made, for stuffs and giggles
         if rowoutput == True:
             print '################## TDE table definition created ######################'
             for c in range(0,tableDef.getColumnCount()):
                 print 'Column: ' + str(tableDef.getColumnName(c)) + ' Type: ' + str(tableDef.getColumnType(c))
-            time.sleep(5) # wait 5 seconds so you can actually read shit!
+            time.sleep(5) # wait 5 seconds so you can actually read stuff!
 
         # ok lets add the new def as a table in the extract
         tabletran = tdefile.addTable("Extract",tableDef) 

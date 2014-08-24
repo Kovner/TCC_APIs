@@ -75,7 +75,35 @@ License
 
 MIT
 
+FAQs / Notes
+----
 
+##### I see an error that sort of looks like this (data type may vary) whenever your code tries to turn a csv into an extract. What's going on?
+Example:
+```sh
+Error: TypeError: an integer is required
+    at PythonShell.parseError (C:\node\node_modules\python-shell\index.js:131:17)
+    at ChildProcess.<anonymous> (C:\node\node_modules\python-shell\index.js:67:28)
+    at ChildProcess.emit (events.js:98:17)
+    at Process.ChildProcess._handle.onexit (child_process.js:809:12)
+    ----- Python Traceback -----
+    File "C:\node\public\js\csv_2_tde.py", line 216, in <module>
+      newrow.setInteger(columnposition, datatyper(row[fieldname]))
+    File "c:\python27\lib\site-packages\dataextract\Base.py", line 248, in setInteger
+      , c_int(value)
+ ```     
+
+ Your CSV file most likely has mixed data types in the same field. For example, the code was expecting an INT based on the majority of the other values in the column, but this row just handed us a STRING. 
+ 
+ What can you do? In /public/js/csv_2_tde.py, you can temporarily set the **rowoutput** flag (line 14) to **True**. Then navigate to /public/js and run the script manually to see debugging information. This extra information will tell you the row on which the script failed so you can fix it. 
+ 
+ ##### I used to be able to process files with no problem. Now I an error like the one above when I attempt to upload a file I KNOW is good. Why?
+ 
+ 
+The csv_2_tde.py script attempts to process ANY csv file it sees in the /public/uploads folder. It is likely an older, "broken" CSV file is still sitting there and the script is trying to process it (and failing) BEFORE it even gets to your "known good file". Clean up the /uploads folder and try again.
+ 
+ 
+ 
 
 [PhantomJS]:http://phantomjs.org
 [Node.js]:http://nodejs.org/
@@ -84,4 +112,5 @@ MIT
 [documentation]:http://onlinehelp.tableausoftware.com/current/server/en-us/help.htm#trusted_auth_trustIP.htm
 [Enable access]:http://kb.tableausoftware.com/articles/knowledgebase/creating-custom-administrative-views
 
+Special thanks to Ryan Robitialle for writing the Python script years ago so we didn't have to!
 
