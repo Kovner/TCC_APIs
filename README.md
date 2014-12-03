@@ -100,6 +100,9 @@ Error: TypeError: an integer is required
 #####I used to be able to process files with no problem. Now I see an error like the one above when I attempt to upload a file I KNOW is good. Why?
 The csv_2_tde.py script attempts to process ANY csv file it sees in the /public/uploads folder. You probably have an older, "broken" CSV file still sitting there and the script is trying to process it (and failing) BEFORE it  gets to your "known good file". Clean up the /uploads folder and try again.
  
+#####Why is my (int, datetime, double, whatever) column in the CSV being created as a String in the extract?
+When in doubt, the python script which generates your extract via the Tableau Extract API goes with "string". The script probaby sees data it can't quite figure out (like a date that looks like this: "12/31/1999 0:00")
+
 #####Help! I can't this running! I see an error or something! I need technical support! 
  Sorry about that, but this is a proof-of-concept sample application - not something that is production ready. It isn't supported by Tableau. In a pinch you might get someone in the [Tableau Developer Community] to give you a push in the right direction, however.
  

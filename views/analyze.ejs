@@ -44,7 +44,7 @@
 </body>
     <script type="text/javascript"> 
         $(function(){
-            var myDropzone = new Dropzone("form#demo-upload");
+            var myDropzone = new Dropzone("form#demo-upload", {maxFilesize : 1000});
             $("form#demo-upload").addClass("dropzone");
             myDropzone.on("complete", function(file) {
                 console.log ("Time to kick of TDE API for " + file.name);

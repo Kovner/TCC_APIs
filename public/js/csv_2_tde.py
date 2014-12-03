@@ -216,6 +216,12 @@ for csvfilename in os.listdir("."):
                         newrow.setInteger(columnposition, datatyper(row[fieldname]))
                     else:
                         newrow.setNull(columnposition)
+                                        
+                if fieldtype == 'float':
+                    if row[fieldname] != None:
+                        newrow.setDouble(columnposition, datatyper(row[fieldname]))
+                    else:
+                        newrow.setNull(columnposition)
 
                 if fieldtype == 'bool':
                     if row[fieldname] != None:
