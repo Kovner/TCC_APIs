@@ -24,6 +24,7 @@ Installation
  - To begin, you must download and install [Node.Js] for your operating system (Windows, Linux)
  - You must also install and configure the **Python**-based [Extract API].
  - And what good is the API without Python itself? Install [Python 2.7.X] for your OS. 
+ - Make sure that the Python install folder is in your PATH
  - Next, download the code using the **Download ZIP** button to your upper-right
  - Unzip to c:\node, and navigate there on the command-line.
  - Execute these commands to prepare the app
@@ -49,6 +50,7 @@ We're a bit lazy. We admit it. As a result you need to update the code a bit.
 In c:\node\app.js modify:
  - Line  44: Update the username & password for an admin on your server
  - Line  47: Update the Tableau Server name we'll be connecting to
+ - Line 185: Update the Tableau Server name again
 
  
 In c:\node\views\aboutcompany.ejs, modify:

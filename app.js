@@ -182,6 +182,7 @@ app.get('/processfile', function(req, res){
 		argArray.push('tabcmd');
 		argArray.push('publish');
 		argArray.push('c:\\node\\public\\uploads\\' + fileName.slice(0,-4) + '.tde');
+        argArray.push('-shttp://winTableau');
 		argArray.push('-p' + admin.password);
 		argArray.push('-u' + admin.username);
         argArray.push('-trest');
