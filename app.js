@@ -10,15 +10,15 @@ var flash = require('connect-flash');
 // Modules for handling xml requests and responses
 var jsxml = require("node-jsxml");
 var XMLWriter = require('xml-writer');
-var request = require("request");
+var request = require('request');
+var FormData = require('form-data');
 
 // Modules used for uploading files, writing to the file system, and publishing to Tableau
-var fs = require('fs');
+
 var busboy = require('connect-busboy');
 var parseString = require('xml2js').parseString;
 var PythonShell = require('python-shell');
-var exec = require('exec');
-
+var fs = require('fs');
 
 var app = express();
 
@@ -44,13 +44,15 @@ var users = {russch:"howdy"};
 var admin = {username: "admin", password: "adminpw"};
 
 //location of the server
-var tableauServer = "http://winTableau"; //Russell's
+var tableauServer = "http://russellchri05e1"; //Russell's
 // var tableauServer = "http://mkovner-vm"; //Kovner's
 
 
-//variable to hold auth token of an admin user so we can do stuff easily
-var adminAuthToken; 
-
+//variables to hold auth token of an admin user & REST Project & SiteID so we can do stuff easily
+    var adminAuthToken; 
+    var siteID;
+    // ID of the Default Project in REST site. Lookup with REST API or PGAdmin3. I'm being lazy and hard-coding cause I can.
+    var projectID = 'efaffc44-89ec-11e3-972e-0bebbf58ccb0';
 
 
 app.get('/', function(req,res) {
@@ -166,7 +168,6 @@ app.get('/processfile', function(req, res){
       mode: 'text',
       scriptPath: 'C:\\node\\public\\js'
     };
-	
     PythonShell.run('csv_2_tde.py', options, function (err, results) {
       if (err) throw err;
       // results is an array consisting of messages collected during execution
@@ -174,39 +175,62 @@ app.get('/processfile', function(req, res){
 	  console.log(results[results.length -2]);
 	  console.log(results[results.length -1]);
 	  
-	  
-		console.log ("Publishing Data Source");
-		
-		argArray  = [];
-		// Args to pass to exec module
-		argArray.push('tabcmd');
-		argArray.push('publish');
-		argArray.push('c:\\node\\public\\uploads\\' + fileName.slice(0,-4) + '.tde');
-        argArray.push('-shttp://winTableau');
-		argArray.push('-p' + admin.password);
-		argArray.push('-u' + admin.username);
-        argArray.push('-trest');
-		argArray.push('-n' + fileName.slice(0,-4)); // Friendly name of data source
+	  //Wait for 1 second before beginning publish to allow 
+		console.log ("Publishing Data Source via REST");
+        console.log(fileName.toString());
+        //First, build the XML for the POST
+        var dsXml = new XMLWriter();
+        dsXml.startElement('tsRequest')
+                    .startElement('datasource')
+                    .writeAttribute('name', fileName.slice(0,-4))
+                        .startElement('project')
+                            .writeAttribute('id', projectID)
+                        .endElement()
+                    .endElement()
+                .endElement();
+        console.log(dsXml.toString());
+    
+    var CRLF = '\r\n';
+    var form = new FormData();
 
 
-		//First, TabCmd Publish
-		exec( argArray, function(err, out, code) {
-		  if (err instanceof Error)
-			throw err;
-		  process.stderr.write(err);
-		  process.stdout.write(out);
-		  
-			  //Then, logout
-			  exec(['tabcmd', 'logout'], function(err, out, code) {
+    form.append('request_payload', dsXml.toString(), {contentType: 'text/xml'});
+    form.append('tableau_datasource', 
+                fs.createReadStream('c:\\node\\public\\uploads\\' + fileName.slice(0,-4) + '.tde'),
+                {contentType: 'application/octet-stream'});
 
-				  if (err instanceof Error)
-					throw err;
-				  process.stderr.write(err);
-				  process.stdout.write(out);
-				 // process.exit(code);		
-				res.end();
-				});
-		});
+    form.submit(
+        {
+            // Remove any protocol (like http://) from start of server name
+            
+            host: tableauServer.replace(/.*?:\/\//g, ""),
+            //port: 8888, // uncomment to see your reqests in HTTP Proxies like Fiddler, Charles
+            path: '/api/2.0/sites/' + siteID + '/datasources?overwrite=true',
+            headers: {
+                'X-Tableau-Auth': adminAuthToken, 
+                'Content-Type': 'multipart/mixed; boundary=' + form.getBoundary()
+            }
+        }, function(err, res) {
+              if (err) throw err;
+             console.log(res.statusCode);
+             var str = '';
+              //another chunk of data has been recieved, so append it to `str`
+
+              res.on('data', function (chunk) {
+                str += chunk;
+              });
+
+              //the whole response has been recieved, so we just print it out here
+              res.on('end', function () {
+                console.log(str);
+
+              });
+
+        });
+       
+        res.end();
+
+
 		
 	  
     });
@@ -246,7 +270,7 @@ var createUser = function(user, callback) {
 	// First we need to login to the REST API as an admin.
 	var loginxml = new XMLWriter();
 	loginxml.startElement('tsRequest').startElement('credentials').writeAttribute('name', admin.username)
-		.writeAttribute('password', admin.password).startElement('site').writeAttribute('contentUrl', '');
+		.writeAttribute('password', admin.password).startElement('site').writeAttribute('contentUrl', 'rest');
 	request.post( 
 		{
 			url: tableauServer + '/api/2.0/auth/signin',
@@ -256,7 +280,7 @@ var createUser = function(user, callback) {
 		// Express requests take a 'callback' function which will be called when the request has been processed. The
 		// response from the server will be contained in the 3rd parameter 'body'.
 		function(err, response, body) {
-			if(err) {
+            if(err) {
 				callback(err);
 				return;
 			} else if(response.statusCode != 200) {
@@ -300,7 +324,7 @@ var createUser = function(user, callback) {
 						//First, build the XML for the POST
 						var userxml = new XMLWriter();
 						userxml.startElement('tsRequest').startElement('user')
-							.writeAttribute('name', user).writeAttribute('role', 'Interactor')
+							.writeAttribute('name', user).writeAttribute('siteRole', 'Interactor')
 							.writeAttribute('publish', 'true').writeAttribute('contentAdmin','false')
 							.writeAttribute('suppressGettingStarted', 'true');
 						request.post( 
@@ -313,7 +337,7 @@ var createUser = function(user, callback) {
 								}
 							},
 							function(err, response, body) {
-								if(err) {
+                                if(err) {
 									callback(err);
 									return;
 								} else if(response.statusCode != 201) {
@@ -342,7 +366,7 @@ var adminLogin = function (callback){
     // Used to Login an Admin - First we need to login to the REST API as an admin.
 	var loginxml = new XMLWriter();
 	loginxml.startElement('tsRequest').startElement('credentials').writeAttribute('name', admin.username)
-		.writeAttribute('password', admin.password).startElement('site').writeAttribute('contentUrl', '');
+		.writeAttribute('password', admin.password).startElement('site').writeAttribute('contentUrl', 'rest');
 	request.post( 
 		{
 			url: tableauServer + '/api/2.0/auth/signin',
@@ -394,7 +418,7 @@ var getDataSources = function (callback) {
         if (adminAuthToken == -1) {
             return
         };
-
+            
         request({
                 url: tableauServer + '/api/2.0/sites/rest?key=name',
                 headers: {
@@ -409,7 +433,7 @@ var getDataSources = function (callback) {
                     return;
                 } else {
                     var siteXML = new jsxml.XML(body);
-                    var siteID = siteXML.child('site').attribute("id").getValue();
+                    siteID = siteXML.child('site').attribute("id").getValue();
                     console.log("site id: " + siteID);
 
                     // use siteID to get list of data sources FROM said site

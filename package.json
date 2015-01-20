@@ -15,8 +15,10 @@
     "connect-busboy": "0.x",
     "xml2js": "0.4.x",
     "python-shell":  "0.0.x",
-	"exec": "0.1.x"
-	
-      
-  }
+    "form-data": "0.x.x"     
+  },
+"repository": {
+  "type": "git",
+  "url": "git://github.com/kovner/TCC_APIs.git"
+    }
 }
