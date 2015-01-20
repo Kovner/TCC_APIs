@@ -1,6 +1,8 @@
 Tableau Conference Sample Application
 =========
 
+#####This branch has been modified to work work Tableau Server 9 ONLY - it will not work against 8.x
+
 This is sample code, and is not supported by Tableau. Please be kind and don't call Technical Support for help - they don't know what this is!
 
 What does it do?
