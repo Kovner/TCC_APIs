@@ -50,7 +50,7 @@ We're a bit lazy. We admit it. As a result you need to update the code a bit.
 In c:\node\app.js modify:
  - Line  44: Update the username & password for an admin on your server
  - Line  47: Update the Tableau Server name we'll be connecting to
- - Line 185: Update the Tableau Server name again
+ - Line  55: The ProjectID of the Default (or any other) project in the "Rest" site. Use Postman or PGAdmin3 to find this value
 
  
 In c:\node\views\aboutcompany.ejs, modify:
