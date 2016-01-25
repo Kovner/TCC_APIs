@@ -3,7 +3,9 @@
 
 import csv, os, time
 from datetime import datetime
-import dataextract as tde #saves some typing, cause i'm a lazy person
+from tableausdk import *
+from tableausdk.Server import * 
+from tableausdk.Extract import *
 
 ################ PARAMETERS FOR YOU, CODE MONKEY! ##########################
 cvsfilenamemask = '.csv' # can be explicit 'thisfile.csv' for one file - or open '.csv' for all that match
@@ -140,15 +142,15 @@ for csvfilename in os.listdir("."):
 
         os.chdir(targetdir)
         try:  # Just in case the file exists already, we don't want to bomb out
-            tdefile = tde.Extract(tdefilename) # in CWD
+            tdefile = Extract(tdefilename) # in CWD
         except: 
             os.system('del ' + targetdir + tdefilename)
             os.system('del DataExtract.log') #might as well erase this bitch too
-            tdefile = tde.Extract(targetdir + tdefilename)
+            tdefile = Extract(targetdir + tdefilename)
 
         # ok lets build the table definition in TDE with our list of names and types first
         # replacing literals with TDE datatype integers, etc
-        tableDef = tde.TableDefinition() #create a new table def
+        tableDef = TableDefinition() #create a new table def
 
         numfields = len(dfields)
         #print numfields
@@ -196,7 +198,7 @@ for csvfilename in os.listdir("."):
                     print '=',
 
             columnposition = 0
-            newrow = tde.Row(tableDef)
+            newrow = Row(tableDef)
 
             for t in range(numfields):
                 fieldtype = dtypes[t].replace("<type '","").replace("'>","").replace("<class '","").replace('NoneType','str').replace('uuid.UUID','str')
